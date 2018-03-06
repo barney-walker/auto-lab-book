@@ -1,0 +1,89 @@
+
+
+  <!DOCTYPE html>
+  <html lang="en">
+  
+      <head>
+          <!-- Required meta tags -->
+          <meta charset="utf-8">
+    <script src="https://docs.handsontable.com/pro/1.14.3/bower_components/handsontable-pro/dist/handsontable.full.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://docs.handsontable.com/pro/1.14.3/bower_components/handsontable-pro/dist/handsontable.full.min.css">
+
+      </head>
+
+<body>
+<div>
+    <div id="example1" class="hot handsontable htRowHeaders htColumnHeaders"></div>
+  </div>
+  
+</body>
+
+  <script>
+  
+  document.addEventListener("DOMContentLoaded", function() {
+
+  var example1 = document.getElementById('example1');
+
+  inputs = [{FWPrimer: {ID:'B67',Vol:'50ul'},RVPrimer:{ID:'B65',Vol:'5ul'},Enzyme:'Phusion'}];
+
+  out = {cols:[],headers:[],count:0}
+
+  function flatten(obj,out,level,name,stem) {
+
+    var newStem = (typeof stem !== 'undefined' && stem !== '') ? stem + '.' + name : name;
+
+    if (typeof obj !== 'object') {
+
+      out.cols.push({data: newStem});
+
+      out.count++;
+
+      return out;
+
+    } else {
+
+    for (var p in obj) {
+
+      level++;
+
+      var count = out.count;
+
+      flatten(obj[p],out,level,p,newStem);
+
+      if(!out.headers[level-1]){
+        
+        let missingLevels = level - out.headers.length;
+        for(let i=0;i<missingLevels;i++){
+          out.headers.push([])
+        }
+      }
+
+      out.headers[level-1].push({label:p,colspan:out.count-count})
+
+      level--;
+
+    }
+
+    return out;
+
+    }
+
+
+  };
+
+  var out = flatten(inputs[0],out,0)
+  
+  var hot = new Handsontable(example1, {
+    data: inputs,
+    colHeaders: true,
+    rowHeaders: true,
+    hiddenColumns: true,
+    colWidths: 60,
+    nestedHeaders: out.headers,
+    columns: out.cols
+  });
+  
+})
+  
+  
+  </script>
